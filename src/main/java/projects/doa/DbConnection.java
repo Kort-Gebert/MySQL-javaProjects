@@ -24,7 +24,7 @@ public static Connection getConnection() {
 		return conn;
 	} catch (SQLException e) {
 		System.out.println("Error: Unable to obtain connection!");
-		throw new DbException(e);
+		throw new DbException("Error: Unable to obtain conection!");
 	}
 }
 }
