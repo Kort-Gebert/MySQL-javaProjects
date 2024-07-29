@@ -11,10 +11,13 @@ import projects.service.ProjectService;
 public class ProjectsApp {
 	private Scanner scanner = new Scanner(System.in);
 	private ProjectService projectService = new ProjectService();
+	private Project curProject;
 	
 	// @formatter:off
 	private List<String> operations = List.of(
-			"1) Add a project"
+			"1) Add a project",
+			"2) List projects",
+			"3) Select project"
 	);
 	// @formatter:on
 	
@@ -24,6 +27,17 @@ public class ProjectsApp {
 
 	}// end of main method
 	
+	private void listProjects() {
+		List<Project> projects = projectService.fetchAllProjects();
+		
+		System.out.println("\nProjects:");
+		
+		projects.forEach(project -> System.out
+				.println("   " + project.getProjectId() 
+				+ ": " + project.getProjectName()));
+
+	}
+	
 	private void processUserSelections() {
 	boolean done = false;
 	 while(!done) {
@@ -31,15 +45,27 @@ public class ProjectsApp {
 			 int selection = getUserSelection();
 
 				switch(selection) {
+				
 				case -1:
 					done = exitMenu();
 					break;
+					
 				case 1:
 					createProject();
 					break;
+					
+				case 2:
+					listProjects();
+					break;
+					
+				case 3:
+					selectProject();
+					break;
+					
 					default:
 						System.out.println("\n" + selection + " is not a valid selection. Try again.");
 					break;
+					
 				}//end of switch
 			
 		 }//end of try
@@ -51,6 +77,16 @@ public class ProjectsApp {
 	
 	}// end of processUserSelections method
 	
+	private void selectProject() {
+		listProjects();
+		Integer projectId = getIntInput("Enter a project ID to select a project");
+		
+		curProject = null;
+		
+		curProject = projectService.fetchProjectById(projectId);
+		
+	}
+
 	private void createProject() {
 	String projectName = getStringInput("Enter the project name");
 	BigDecimal estimatedHours = getDecimalInput("Enter the estimated hours");
@@ -68,28 +104,28 @@ public class ProjectsApp {
 	
 		Project dbProject = projectService.addProject(project);
 		System.out.println("You have successfully created project " + dbProject);
-	}
+	}//end of createProject method
 
 	private BigDecimal getDecimalInput(String prompt) {
 		String input = getStringInput(prompt);
 		
 		if (Objects.isNull(input)) {
 		return null;
-		}
+		}//end of if
 		
 		try {
 			return new BigDecimal(input).setScale(2);
-		}
+		}//end of try
 		catch (NumberFormatException e) {
 			throw new DbException(input + " is not a valid decimal number.");
-		}
+		}//end of catch
 		
-	}
+	}//end of getDecimalInput method
 
 	private boolean exitMenu() {
 	System.out.println("Exiting the menu.");
 		return true;
-	}
+	}//end of exitMenu method
 
 	private int getUserSelection() {
 		printOperations();
@@ -97,12 +133,19 @@ public class ProjectsApp {
 		Integer input = getIntInput("Enter a menu selection");
 		
 		return Objects.isNull(input) ? -1 : input;
-	}//end of getUserSelection
+	}//end of getUserSelection method
 	
 	private void printOperations() {
 		System.out.println("\nThese are the available selections. press the enter key to quit:");
 		operations.forEach(line -> System.out.println(" " + line));
 		
+		
+		if(Objects.isNull(curProject)) {
+			System.out.println("\nYou are not working with a project.");
+		}//end of if
+		else {
+			System.out.println("\nYou are working with project: " + curProject);
+		}
 	}//end of printOperations method
 	
 	 private Integer getIntInput(String prompt) {
@@ -126,7 +169,5 @@ public class ProjectsApp {
 		 
 		 return input.isBlank() ? null : input.trim();
 	 }//end of getStringInput method
-	 
-	 
 	 
 	}// end of class
