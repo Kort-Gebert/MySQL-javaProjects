@@ -5,7 +5,6 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
@@ -19,7 +18,7 @@ import projects.exception.DbException;
 import provided.util.DaoBase;
 
 
-@SuppressWarnings("unused")
+
 public class ProjectDao extends DaoBase {
 	private static final String CATEGORY_TABLE = "category";
 	private static final String MATERIAL_TABLE = "material";
@@ -74,6 +73,7 @@ public class ProjectDao extends DaoBase {
 			startTransaction(conn);
 			
 			try(PreparedStatement stmt = conn.prepareStatement(sql)) {
+				
 				try(ResultSet rs = stmt.executeQuery()) {
 					List<Project> projects = new LinkedList<>();
 					
