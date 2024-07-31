@@ -19,6 +19,7 @@ import provided.util.DaoBase;
 
 
 
+
 public class ProjectDao extends DaoBase {
 	private static final String CATEGORY_TABLE = "category";
 	private static final String MATERIAL_TABLE = "material";
@@ -194,6 +195,70 @@ public class ProjectDao extends DaoBase {
 			}//end of second try
 		}//end of first try
 	}//end of fetchMaterialsForProject method
+
+	public boolean modifyProjectDetails(Project project) {
+		// @formatter:off
+				String sql = ""
+						+ "UPDATE " + PROJECT_TABLE + " SET "
+						+ "project_name = ?,"
+						+ "estimated_hours = ?,"
+						+ "actual_hours = ?,"
+						+ "difficulty = ?,"
+						+ "notes = ? "
+						+ "WHERE project_id = ?";
+				// @formatter:on
+				
+				try (Connection conn = DbConnection.getConnection()) {
+					startTransaction(conn);
+					
+					try(PreparedStatement stmt = conn.prepareStatement(sql)) {
+						setParameter(stmt, 1, project.getProjectName(), String.class);
+						setParameter(stmt, 2, project.getEstimatedHours(), BigDecimal.class);
+						setParameter(stmt, 3, project.getActualHours(), BigDecimal.class);
+						setParameter(stmt, 4, project.getDifficulty(), Integer.class);
+						setParameter(stmt, 5, project.getNotes(), String.class);
+						setParameter(stmt, 6, project.getProjectId(), Integer.class);
+						
+						boolean modified = stmt.executeUpdate() == 1;
+						commitTransaction(conn);
+						
+						return modified;
+					}//end of second try
+					catch (Exception e) {
+						rollbackTransaction(conn);
+						throw new DbException(e);
+					}//end of second try catch
+				}//end of first try
+				catch (SQLException e) {
+					throw new DbException(e);
+				}//end of first try catch
+	}//end of modifyProjectDetails method
+
+	public boolean deleteProject(Integer projectId) {
+		String sql = "DELETE FROM " + PROJECT_TABLE + " WHERE project_id = ?";
+		
+		try(Connection conn = DbConnection.getConnection()) {
+			startTransaction(conn);
+			
+			try(PreparedStatement stmt = conn.prepareStatement(sql)) {
+				setParameter(stmt, 1, projectId, Integer.class);
+				
+				boolean deleted = stmt.executeUpdate() == 1;
+				
+				commitTransaction(conn);
+				return deleted;
+			}
+			catch (Exception e) {
+				rollbackTransaction(conn);
+				throw new DbException(e);
+			}
+		}
+		catch (SQLException e) {
+			throw new DbException(e);
+		}
+	}
+
+
 	
 	
 }//end of class

@@ -46,3 +46,17 @@ step_order INT NOT NULL,
 PRIMARY KEY (step_id),
 FOREIGN KEY (project_id) REFERENCES project (project_id) ON DELETE CASCADE
 );
+
+INSERT INTO project (project_name, estimated_hours, actual_hours, difficulty, notes) VALUES (
+'hang a door', 4, 3, 3, 'Use Home Depot hangers');
+INSERT INTO material (project_id, material_name, num_required, cost) VALUES (1, 'Door hangers', 4, 20.75);
+INSERT INTO material (project_id, material_name, num_required, cost) VALUES (1, 'Screws', 24, 4.50);
+INSERT INTO step (project_id, step_text, step_order) VALUES (1, 'Align hangers on opening side of door', 1);
+INSERT INTO step (project_id, step_text, step_order) VALUES (
+1, 'Use door wedges(splints) into the sides of the door', 2);
+INSERT INTO step (project_id, step_text, step_order) VALUES (1, 'Screw the hangers int to door frame', 3);
+INSERT INTO category (category_id, category_name) VALUES (1, 'Doors and Windows');
+INSERT INTO category (category_id, category_name) VALUES (2, 'Repairs');
+INSERT INTO category (category_id, category_name) VALUES (3, 'Gardening');
+INSERT INTO project_category (project_id, category_id) VALUES (1, 1);
+INSERT INTO project_category (project_id, category_id) VALUES (1, 2);
